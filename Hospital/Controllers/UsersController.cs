@@ -25,19 +25,19 @@ namespace ForestFireDetection.Controllers
         }
 
         [Authorize(Roles = UserRoles.Admin)]
-        public async Task<IActionResult> ListFireStations()
+        public async Task<IActionResult> ListUsers()
         {
             var users = await _userManager.Users.ToListAsync();
-            var fireStations = new List<ApplicationUser>();
+            var Users = new List<ApplicationUser>();
 
             foreach (var user in users)
             {
                 if (await _userManager.IsInRoleAsync(user, UserRoles.User))
                 {
-                    fireStations.Add(user);
+                    Users.Add(user);
                 }
             }
-            return View(fireStations); // Make sure you have a corresponding view to display the list of patients
+            return View(Users); // Make sure you have a corresponding view to display the list of patients
         }
 
         [Authorize(Roles = UserRoles.Admin)]
@@ -59,14 +59,14 @@ namespace ForestFireDetection.Controllers
 
         // GET: User/Create
         [HttpGet]
-        [Authorize(Roles = UserRoles.Admin)]
+        //[Authorize(Roles = UserRoles.Admin)]
         public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
-        [Authorize(Roles = UserRoles.Admin)]
+       // [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Create(RegisterViewModel user)
         {
             if (ModelState.IsValid)
@@ -93,7 +93,7 @@ namespace ForestFireDetection.Controllers
                     await _userManager.AddToRoleAsync(newUser, UserRoles.User);  // Assign a default role or based on model
                 }
 
-                return RedirectToAction(nameof(ListFireStations));
+                return RedirectToAction(nameof(ListUsers));
             }
             TempData["Error"] = "entered information is not correct";
             // If we reach here, something went wrong, re-show form
@@ -148,7 +148,7 @@ namespace ForestFireDetection.Controllers
             var result = await _userManager.UpdateAsync(user);
             if (result.Succeeded)
             {
-				return RedirectToAction(nameof(ListFireStations));
+				return RedirectToAction(nameof(ListUsers));
 			}
             else
             {
@@ -188,7 +188,7 @@ namespace ForestFireDetection.Controllers
             _context.Remove(user1);
             var result = _context.SaveChanges();
 			//checking the user`s role to redirect to its own list page
-			return RedirectToAction(nameof(ListFireStations));
+			return RedirectToAction(nameof(ListUsers));
 		}
 
         [HttpGet]

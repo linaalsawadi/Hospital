@@ -24,6 +24,53 @@ namespace Hospital_appointment_system.Controllers
         }
 
         [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterViewModel registerViewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(registerViewModel);
+            }
+
+            var user = await _userManeger.FindByEmailAsync(registerViewModel.EmailAddress);
+            if (user != null)
+            {
+                TempData["Error"] = "This email address is already in use.";
+                return View(registerViewModel);
+            }
+
+            var newUser = new ApplicationUser()
+            {
+                FirstName = registerViewModel.FirstName,
+                LastName = registerViewModel.LastName,
+                Email = registerViewModel.EmailAddress,
+                UserName = registerViewModel.FirstName+ registerViewModel.LastName
+            };
+
+            var newUserResponse = await _userManeger.CreateAsync(newUser, registerViewModel.Password);
+
+            if (newUserResponse.Succeeded)
+            {
+                await _signInManeger.SignInAsync(newUser, isPersistent: false);
+                return RedirectToAction("Index", "Home");
+            }
+
+            foreach (var error in newUserResponse.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+
+            return View("Register", registerViewModel);
+        }
+
+
+
+        [HttpGet]
         public IActionResult Login()
         {
             var response = new LoginViewModel();
