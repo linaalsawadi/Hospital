@@ -56,6 +56,8 @@ namespace Hospital_appointment_system.Controllers
 
             if (newUserResponse.Succeeded)
             {
+                await _userManeger.AddToRoleAsync(newUser, UserRoles.User); 
+
                 await _signInManeger.SignInAsync(newUser, isPersistent: false);
                 return RedirectToAction("Index", "Home");
             }
@@ -93,6 +95,9 @@ namespace Hospital_appointment_system.Controllers
                     var result = await _signInManeger.PasswordSignInAsync(user, loginViewModel.Password, false, false);
                     if (result.Succeeded) 
                     {
+                        await _signInManeger.SignOutAsync(); // Delete the old cookies
+                        await _signInManeger.SignInAsync(user, isPersistent: false); 
+
                         return RedirectToAction("Index", "Home");
                     }
                 }
@@ -108,6 +113,5 @@ namespace Hospital_appointment_system.Controllers
             await _signInManeger.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
-
     }
 }

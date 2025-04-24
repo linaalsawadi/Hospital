@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Hospital.Data;
 using Hospital.Models;
 using Hospital.Areas.Identity.Data;
-using Hospital.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 public class Program
@@ -29,19 +28,22 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireUppercase = false;
     options.Password.RequireLowercase = false;
-}).AddEntityFrameworkStores<HospitalContext>();
-builder.Services.AddMemoryCache();
+}).AddEntityFrameworkStores<HospitalContext>().AddDefaultTokenProviders();
+        builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, AppClaimsPrincipalFactory>();
+
+        builder.Services.AddMemoryCache();
 builder.Services.AddSession();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
        .AddCookie();
 
 var app = builder.Build();
 
+
 var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
 
 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-await Seeds.SeedUsersAndRolesAsync(app);
+await Hospital.Data.Seeds.SeedUsersAndRolesAsync(app);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -64,7 +66,8 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
-app.Run();
+       // await Seeds.SeedUsersAndRolesAsync(app);
+        app.Run();
 
     }
 }

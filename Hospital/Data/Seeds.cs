@@ -63,6 +63,22 @@ namespace Hospital.Data
                     await userManager.CreateAsync(newAppUser, "sau123");
                     await userManager.AddToRoleAsync(newAppUser, UserRoles.User);
                 }
+
+                string apUserEmail = "use@eticket.com";
+                var apUser = await userManager.FindByEmailAsync(apUserEmail);
+                if (apUser == null)
+                {
+                    var newApUser = new ApplicationUser()
+                    {
+                        UserName = apUserEmail,
+                        FirstName = "ap",
+                        LastName = "user",
+                        Email = apUserEmail,
+                        EmailConfirmed = true,
+                    };
+                    await userManager.CreateAsync(newApUser, "sau123");
+                    await userManager.AddToRoleAsync(newApUser, UserRoles.Admin);
+                }
             }
         }
     }

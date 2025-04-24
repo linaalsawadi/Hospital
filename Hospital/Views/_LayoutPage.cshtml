@@ -1,7 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Hospital.Data
+<!DOCTYPE html>
 <html>
 <head class="index-page">
-        <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width" />
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Index - Medilab Bootstrap Template</title>
@@ -36,9 +37,8 @@
     * License: https://bootstrapmade.com/license/
     ======================================================== -->
 </head>
-    <body>
+<body>
     <header id="header" class="header sticky-top">
-
         <div class="topbar d-flex align-items-center">
             <div class="container d-flex justify-content-center justify-content-md-between">
                 <div class="contact-info d-flex align-items-center">
@@ -66,31 +66,6 @@
                 <nav id="navmenu" class="navmenu">
                     <ul>
                         <li><a href="#hero" class="active">Home<br></a></li>
-
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">@User.Identity.Name</a>
-                            </li>
-                            <li class="nav-item">
-                                <form asp-area="" asp-controller="Account" asp-action="Logout">
-                                    <button class="btn btn-outline-danger">Logout</button>
-                                </form>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
-                            </li>
-                        }
-                       @*  <li><a href="#about">About</a></li>
-                        <li><a href="#services">Services</a></li>
-                        <li><a href="#departments">Departments</a></li>
-                        <li><a href="#doctors">Doctors</a></li> *@
                         <li class="dropdown">
                             <a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
                             <ul>
@@ -110,21 +85,66 @@
                                 <li><a href="#">Dropdown 4</a></li>
                             </ul>
                         </li>
-@*                         <li><a href="#contact">Contact</a></li>
- *@                    </ul>
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            @* خيارات خاصة بكل دور *@
+                            if (User.IsInRole(UserRoles.Admin))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Admin" asp-action="Index">Admin Panel</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="UserManagement" asp-action="Index">Manage Users</a>
+                                </li>
+                            }
+                            else if (User.IsInRole(UserRoles.User))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Dashboard" asp-action="Index">My Dashboard</a>
+                                </li>
+                            }
+
+                            @* خيارات مشتركة لكل مستخدم مسجل *@
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">@User.Identity.Name</a>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-controller="Account" asp-action="Logout" method="post">
+                                    <button class="btn btn-outline-danger">Logout</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            @* خيارات الزائر *@
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a>
+                            </li>
+                        }
+                        @*  <li><a href="#about">About</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#departments">Departments</a></li>
+                        <li><a href="#doctors">Doctors</a></li> *@
+                        
+                       
+                        @*<li><a href="#contact">Contact</a></li>*@
+                    </ul>
                     <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
                 </nav>
 
-@*                 <a class="cta-btn d-none d-sm-block" href="#appointment">Make an Appointment</a>
- *@
+                @*<a class="cta-btn d-none d-sm-block" href="#appointment">Make an Appointment</a>*@
             </div>
 
         </div>
 
     </header>
-        <div>
-            @RenderBody()
-        </div>
+    <div>
+        @RenderBody()
+    </div>
 
 
     <footer id="footer" class="footer light-background">
@@ -229,6 +249,6 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
-   
+
 </body>
 </html>
